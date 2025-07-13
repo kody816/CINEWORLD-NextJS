@@ -11,23 +11,11 @@ function slugify(title) {
 async function fetchMedia(id) {
   const apiKey = process.env.NEXT_PUBLIC_TMDB_API_KEY;
 
-  const movieRes = await fetch(
-    `https://api.themoviedb.org/3/movie/${id}?api_key=${apiKey}&language=en-US`
-  );
+  const movieRes = await fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=${apiKey}&language=en-US`);
+  if (movieRes.ok) return { ...(await movieRes.json()), type: "movie" };
 
-  if (movieRes.ok) {
-    const movie = await movieRes.json();
-    return { ...movie, type: "movie" };
-  }
-
-  const tvRes = await fetch(
-    `https://api.themoviedb.org/3/tv/${id}?api_key=${apiKey}&language=en-US`
-  );
-
-  if (tvRes.ok) {
-    const tv = await tvRes.json();
-    return { ...tv, type: "tv" };
-  }
+  const tvRes = await fetch(`https://api.themoviedb.org/3/tv/${id}?api_key=${apiKey}&language=en-US`);
+  if (tvRes.ok) return { ...(await tvRes.json()), type: "tv" };
 
   throw new Error("Media not found");
 }
@@ -36,95 +24,107 @@ export default function WatchPage({ params }) {
   const { id } = params;
   const [media, setMedia] = useState(null);
   const [error, setError] = useState(false);
+  const [streamOpen, setStreamOpen] = useState(false);
 
   useEffect(() => {
     const load = async () => {
       try {
         const data = await fetchMedia(id);
         setMedia(data);
-      } catch (err) {
-        console.error("Error loading media:", err);
+      } catch (e) {
+        console.error(e);
         setError(true);
       }
     };
     load();
   }, [id]);
 
-  if (error)
+  if (error) {
     return (
-      <div className="text-white text-center py-10 px-4">
-        <h2 className="text-2xl font-bold mb-4">Something went wrong while loading the video.</h2>
-        <p className="text-light-white">Please try again later or pick another title.</p>
+      <div className="text-white text-center p-6">
+        <h2 className="text-2xl font-bold">Something went wrong while loading.</h2>
+        <p className="text-light-white">Try a different title or check your network.</p>
       </div>
     );
-
-  if (!media) return <div className="text-white p-6">Loading...</div>;
+  }
+  if (!media) {
+    return <div className="text-white p-6">Loading...</div>;
+  }
 
   const title = media.title || media.name;
   const slug = slugify(title);
-  const year = media.release_date?.split("-")[0] || media.first_air_date?.split("-")[0] || "N/A";
+  const year = (media.release_date || media.first_air_date)?.split("-")[0] || "N/A";
   const rating = media.vote_average?.toFixed(1) || "N/A";
   const genres = media.genres?.map((g) => g.name).join(", ") || "N/A";
+  const overview = media.overview || "No description available.";
+  const posterUrl = media.poster_path
+    ? `https://image.tmdb.org/t/p/w500${media.poster_path}`
+    : "/default-poster.png";
 
-  const streamUrl = media.type === "movie"
-    ? `https://www.lulacloud.co/movie/${slug}`
-    : null;
-
-  const downloadUrl =
-    media.type === "movie"
-      ? `https://dl.vidsrc.vip/movie/${id}`
-      : null;
+  const streamUrl = `https://www.lulacloud.co/movie/${slug}`;
+  const downloadUrl = `https://dl.vidsrc.vip/movie/${id}`;
 
   return (
-    <div className="max-w-screen-lg mx-auto px-4 py-8 text-white">
-      <h1 className="text-3xl font-bold mb-2">{title}</h1>
-      <div className="text-sm text-light-white mb-4">
-        <span>{year}</span> • <span>{genres}</span> • <span>⭐ {rating}</span>
-      </div>
+    <div className="max-w-screen-lg mx-auto p-6 bg-[#1c1c1e] rounded-lg shadow-lg">
+      <div className="flex flex-col md:flex-row gap-6">
+        <img src={posterUrl} alt={title} className="w-full md:w-1/3 rounded-lg" />
 
-      {/* LulaCloud iframe */}
-      {streamUrl ? (
-        <div className="aspect-w-16 aspect-h-9 mb-6">
-          <iframe
-            src={streamUrl}
-            allowFullScreen
-            className="w-full h-full rounded-md border-2 border-white"
-          />
+        <div className="flex-1">
+          <h1 className="text-3xl font-bold mb-2">{title}</h1>
+          <div className="text-light-white text-sm mb-4">
+            {year} • {genres} • ⭐ {rating}
+          </div>
+          <p className="text-light-white leading-relaxed mb-6">{overview}</p>
+
+          <div className="flex flex-wrap gap-4 mb-6">
+            {streamUrl && (
+              <button
+                onClick={() => setStreamOpen(!streamOpen)}
+                className={`px-5 py-3 rounded font-semibold ${
+                  streamOpen ? "bg-yellow-400 text-black" : "bg-primary text-black"
+                }`}
+              >
+                {streamOpen ? "Hide Player" : "▶ Play Stream"}
+              </button>
+            )}
+            {downloadUrl && (
+              <a
+                href={downloadUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-5 py-3 bg-yellow-400 text-black rounded font-semibold hover:bg-yellow-300 transition"
+              >
+                ⬇ Download
+              </a>
+            )}
+            <button
+              onClick={() => {
+                const key = `cine-fav-${media.id}`;
+                const fav = {
+                  id: media.id,
+                  title,
+                  poster: media.poster_path,
+                  type: media.type,
+                };
+                localStorage.setItem(key, JSON.stringify(fav));
+                alert("Added to favorites!");
+              }}
+              className="px-5 py-3 bg-white text-black rounded font-semibold hover:bg-gray-200 transition"
+            >
+              ❤️ Favorite
+            </button>
+          </div>
+
+          {streamOpen && (
+            <div className="aspect-w-16 aspect-h-9 mb-6">
+              <iframe
+                src={streamUrl}
+                allowFullScreen
+                className="w-full h-full rounded-md border-2 border-white"
+              />
+            </div>
+          )}
         </div>
-      ) : (
-        <p className="text-red-400 mb-4">Streaming unavailable for this title.</p>
-      )}
-
-      <p className="mb-6 text-light-white leading-relaxed">{media.overview}</p>
-
-      <div className="flex flex-wrap gap-4">
-        {downloadUrl ? (
-          <a
-            href={downloadUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="bg-yellow-400 text-black px-5 py-2 rounded font-semibold hover:bg-yellow-300 transition"
-          >
-            ⬇ Download
-          </a>
-        ) : null}
-
-        <button
-          onClick={() => {
-            const key = `cine-fav-${media.id}`;
-            const fav = {
-              id: media.id,
-              title: title,
-              poster: media.poster_path,
-              type: media.type,
-            };
-            localStorage.setItem(key, JSON.stringify(fav));
-            alert("Added to favorites!");
-          }}
-          className="bg-white text-black px-5 py-2 rounded font-semibold hover:bg-gray-200 transition"
-        >
-          ❤️ Favorite
-        </button>
       </div>
     </div>
   );
