@@ -1,17 +1,17 @@
-"use client";
+'use client';
 import SearchDisplay from "@/components/display/SearchDisplay";
-import HomeFilter from "@/components/filter/HomeFilter";
 import SearchBar from "@/components/searchbar/SearchBar";
 import SearchTitle from "@/components/title/SearchTitle";
 import React, { useEffect, useState } from "react";
-const apiKey = process.env.TMDB_API_KEY;
 import { useDebounce } from "use-debounce";
+
+const apiKey = process.env.NEXT_PUBLIC_TMDB_API_KEY;
 
 const Search = () => {
   const [data, setData] = useState([]);
   const [typedValue, setTypedValue] = useState("");
 
-  // This is triggered when search button is clicked
+  // Triggered on button click
   const handleSearch = (searchValue) => {
     const getData = async () => {
       if (searchValue !== "") {
@@ -19,14 +19,13 @@ const Search = () => {
           `https://api.themoviedb.org/3/search/multi?api_key=${apiKey}&language=en-US&query=${searchValue}`
         );
         const result = await res.json();
-        let data = result.results;
-        setData(data);
+        setData(result.results);
       }
     };
     getData();
   };
 
-  // This is triggered when user starts typing in search bar
+  // Triggered on typing
   const handleTyping = (typedValue) => {
     setTypedValue(typedValue);
   };
@@ -40,18 +39,16 @@ const Search = () => {
           `https://api.themoviedb.org/3/search/multi?api_key=${apiKey}&query=${value}`
         );
         const result = await res.json();
-        let data = result.results;
-        setData(data);
+        setData(result.results);
       }
     };
     getData();
   }, [value]);
 
   return (
-    <div className=" h-full">
+    <div className="h-full">
       <SearchTitle />
       <SearchBar onSearch={handleSearch} onTyping={handleTyping} />
-      {/* <HomeFilter /> */}
       <SearchDisplay movies={data} />
     </div>
   );
