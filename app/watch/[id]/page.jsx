@@ -1,119 +1,95 @@
 // app/watch/[id]/page.jsx
-import Image from "next/image";
 import React from "react";
 
 async function getData(id) {
   const apiKey = process.env.NEXT_PUBLIC_TMDB_API_KEY;
 
-  const movieRes = await fetch(
-    `https://api.themoviedb.org/3/movie/${id}?api_key=${apiKey}&language=en-US`
-  );
+  try {
+    let res = await fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=${apiKey}&language=en-US`);
+    if (res.ok) {
+      const json = await res.json();
+      return { ...json, type: "movie" };
+    }
 
-  if (movieRes.ok) {
-    const data = await movieRes.json();
-    return { ...data, type: "movie" };
+    res = await fetch(`https://api.themoviedb.org/3/tv/${id}?api_key=${apiKey}&language=en-US`);
+    if (res.ok) {
+      const json = await res.json();
+      return { ...json, type: "tv" };
+    }
+
+    return null;
+  } catch (e) {
+    console.error("Error fetching media:", e);
+    return null;
   }
-
-  const tvRes = await fetch(
-    `https://api.themoviedb.org/3/tv/${id}?api_key=${apiKey}&language=en-US`
-  );
-  if (tvRes.ok) {
-    const data = await tvRes.json();
-    return { ...data, type: "tv" };
-  }
-
-  throw new Error("Failed to fetch media");
 }
 
 export default async function WatchPage({ params }) {
   const { id } = params;
   const media = await getData(id);
 
-  const title = media.title || media.name;
-  const poster = media.poster_path
-    ? `https://image.tmdb.org/t/p/w342${media.poster_path}`
-    : "https://i.imgur.com/wjVuAGb.png";
+  if (!media) {
+    return (
+      <div className="p-10 text-center text-red-500">
+        Something went wrong while loading the video.
+      </div>
+    );
+  }
 
-  const genres = media.genres?.map((g) => g.name).join(", ");
-  const release = media.release_date || media.first_air_date;
-  const rating = media.vote_average?.toFixed(1);
-  const runtime = media.runtime || `${media.number_of_seasons} Season(s)`;
-  const overview = media.overview || "No description available.";
-
-  const streamURL =
+  const src =
     media.type === "movie"
-      ? `https://vidsrc.me/embed/movie/${id}`
-      : `https://vidsrc.me/embed/tv/${id}`;
+      ? `https://vidsrc.to/embed/movie/${id}`
+      : `https://vidsrc.to/embed/tv/${id}`;
 
-  const downloadURL =
+  const downloadLink =
     media.type === "movie"
-      ? `https://vidsrc.me/download/movie/${id}`
-      : `https://vidsrc.me/download/tv/${id}`;
+      ? `https://vidsrc.to/download/movie/${id}`
+      : `https://vidsrc.to/download/tv/${id}`;
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8 text-white">
-      <h1 className="text-3xl font-bold mb-4">{title}</h1>
+    <div className="p-4 max-w-screen-lg mx-auto">
+      <h1 className="text-2xl font-bold mb-4 text-white">
+        {media.title || media.name}
+      </h1>
 
-      <div className="grid md:grid-cols-3 gap-8">
-        {/* Poster */}
-        <div className="hidden md:block">
-          <Image
-            src={poster}
-            alt={title}
-            width={400}
-            height={600}
-            className="rounded-md"
-            unoptimized
-          />
-        </div>
+      <div className="aspect-w-16 aspect-h-9 mb-6">
+        <iframe
+          src={src}
+          allowFullScreen
+          className="w-full h-full rounded-md"
+        />
+      </div>
 
-        {/* Info and Stream */}
-        <div className="md:col-span-2">
-          <div className="aspect-w-16 aspect-h-9 mb-4">
-            <iframe
-              src={streamURL}
-              allowFullScreen
-              className="w-full h-full rounded-md"
-            />
-          </div>
+      <p className="text-light-white mb-6">
+        {media.overview?.length > 0 ? media.overview : "No description available."}
+      </p>
 
-          <div className="mb-4 space-y-2">
-            <p><span className="font-semibold text-primary">Genres:</span> {genres}</p>
-            <p><span className="font-semibold text-primary">Release Date:</span> {release}</p>
-            <p><span className="font-semibold text-primary">Rating:</span> ⭐ {rating}</p>
-            <p><span className="font-semibold text-primary">Runtime:</span> {runtime}</p>
-          </div>
+      <div className="flex flex-wrap gap-4">
+        <a
+          href={downloadLink}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="bg-primary text-black px-5 py-2 rounded font-semibold hover:bg-yellow-400 transition"
+        >
+          ⬇ Download
+        </a>
 
-          <p className="mb-6 text-light-white leading-relaxed">{overview}</p>
-
-          <div className="flex flex-wrap gap-4">
-            <a
-              href={downloadURL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="bg-primary text-black px-5 py-2 rounded font-semibold hover:bg-yellow-400 transition"
-            >
-              ⬇ Download
-            </a>
-
-            <button
-              onClick={() => {
-                const key = `cine-fav-${media.id}`;
-                const data = {
-                  id: media.id,
-                  title: media.title || media.name,
-                  poster: media.poster_path,
-                  type: media.type,
-                };
-                localStorage.setItem(key, JSON.stringify(data));
-                alert("Added to favorites!");
-              }}
-              className="bg-white text-black px-5 py-2 rounded font-semibold hover:bg-gray-200 transition"
-            >
-              ❤️ Favorite
-            </button>
-          </div>
-        </div>
+        <button
+          onClick={() => {
+            const key = `cine-fav-${media.id}`;
+            const data = {
+              id: media.id,
+              title: media.title || media.name,
+              poster: media.poster_path,
+              type: media.type,
+            };
+            localStorage.setItem(key, JSON.stringify(data));
+            alert("Added to favorites!");
+          }}
+          className="bg-white text-black px-5 py-2 rounded font-semibold hover:bg-gray-200 transition"
+        >
+          ❤️ Favorite
+        </button>
       </div>
     </div>
   );
