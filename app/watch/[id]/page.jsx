@@ -5,33 +5,46 @@ async function getData(id) {
   const apiKey = process.env.NEXT_PUBLIC_TMDB_API_KEY;
 
   try {
-    let res = await fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=${apiKey}&language=en-US`);
+    const res = await fetch(
+      `https://api.themoviedb.org/3/movie/${id}?api_key=${apiKey}&language=en-US`
+    );
+    const json = await res.json();
+
     if (res.ok) {
-      const json = await res.json();
+      console.log("Fetched as movie:", json);
       return { ...json, type: "movie" };
     }
 
-    res = await fetch(`https://api.themoviedb.org/3/tv/${id}?api_key=${apiKey}&language=en-US`);
-    if (res.ok) {
-      const json = await res.json();
-      return { ...json, type: "tv" };
+    const tvRes = await fetch(
+      `https://api.themoviedb.org/3/tv/${id}?api_key=${apiKey}&language=en-US`
+    );
+    const tvJson = await tvRes.json();
+
+    if (tvRes.ok) {
+      console.log("Fetched as TV show:", tvJson);
+      return { ...tvJson, type: "tv" };
     }
 
-    return null;
-  } catch (e) {
-    console.error("Error fetching media:", e);
-    return null;
+    console.error("Both movie and TV fetch failed", { movie: json, tv: tvJson });
+    throw new Error("Failed to fetch media");
+  } catch (err) {
+    console.error("Error in getData:", err);
+    throw err;
   }
 }
 
 export default async function WatchPage({ params }) {
   const { id } = params;
-  const media = await getData(id);
 
-  if (!media) {
+  let media;
+  try {
+    media = await getData(id);
+  } catch (error) {
     return (
-      <div className="p-10 text-center text-red-500">
-        Something went wrong while loading the video.
+      <div className="p-4 max-w-screen-lg mx-auto">
+        <h1 className="text-xl font-bold text-red-500 mb-4">
+          Something went wrong while loading the video.
+        </h1>
       </div>
     );
   }
@@ -60,9 +73,7 @@ export default async function WatchPage({ params }) {
         />
       </div>
 
-      <p className="text-light-white mb-6">
-        {media.overview?.length > 0 ? media.overview : "No description available."}
-      </p>
+      <p className="text-light-white mb-6">{media.overview}</p>
 
       <div className="flex flex-wrap gap-4">
         <a
