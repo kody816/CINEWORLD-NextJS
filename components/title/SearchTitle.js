@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import Link from "next/link";
-import MovieCards from "./MovieCards";
+import MovieCards from "@/components/display/MovieCards";
 
 const SectionRow = ({ title, movies, link }) => {
   if (!movies || movies.length === 0) return null;
