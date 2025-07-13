@@ -61,7 +61,7 @@ export default function WatchPage({ params }) {
     ? `https://image.tmdb.org/t/p/w500${media.poster_path}`
     : "/default-poster.png";
 
-  const streamUrl = `https://www.lulacloud.co/movie/${slug}`;
+  const streamUrl = `https://pahe.lulacloud.one/embed/${slug}`;
   const downloadUrl = `https://dl.vidsrc.vip/movie/${id}`;
 
   return (
