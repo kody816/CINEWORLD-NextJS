@@ -1,5 +1,6 @@
 // app/watch/[id]/page.jsx
-import React from "react";
+"use client";
+import React, { useEffect, useState } from "react";
 
 async function getData(id) {
   const apiKey = process.env.NEXT_PUBLIC_TMDB_API_KEY;
@@ -13,14 +14,38 @@ async function getData(id) {
   throw new Error("Failed to fetch media");
 }
 
-export default async function WatchPage({ params }) {
+export default function WatchPage({ params }) {
   const { id } = params;
-  const media = await getData(id);
+  const [media, setMedia] = useState(null);
+  const [source, setSource] = useState("vidsrc"); // default
 
-  const src =
-    media.type === "movie"
-      ? `https://vidsrc.to/embed/movie/${id}`
-      : `https://vidsrc.to/embed/tv/${id}`;
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const data = await getData(id);
+        setMedia(data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    load();
+  }, [id]);
+
+  if (!media) return <div className="p-4 text-white">Loading...</div>;
+
+  const title = media.title || media.name;
+  const overview = media.overview;
+
+  const sources = {
+    vidsrc:
+      media.type === "movie"
+        ? `https://vidsrc.to/embed/movie/${id}`
+        : `https://vidsrc.to/embed/tv/${id}`,
+    twoembed:
+      media.type === "movie"
+        ? `https://www.2embed.to/embed/tmdb/movie?id=${id}`
+        : `https://www.2embed.to/embed/tmdb/tv?id=${id}`,
+  };
 
   const downloadLink =
     media.type === "movie"
@@ -28,21 +53,39 @@ export default async function WatchPage({ params }) {
       : `https://vidsrc.to/download/tv/${id}`;
 
   return (
-    <div className="p-4 max-w-screen-lg mx-auto">
-      <h1 className="text-2xl font-bold mb-4">{media.title || media.name}</h1>
+    <div className="p-4 max-w-screen-lg mx-auto text-white">
+      <h1 className="text-2xl font-bold mb-4">{title}</h1>
 
       <div className="aspect-w-16 aspect-h-9 mb-6">
         <iframe
-          src={src}
+          src={sources[source]}
           allowFullScreen
           className="w-full h-full rounded-md"
         />
       </div>
 
-      <p className="text-light-white mb-6">{media.overview}</p>
+      <div className="flex flex-wrap gap-4 mb-4">
+        <button
+          onClick={() => setSource("vidsrc")}
+          className={`px-4 py-2 rounded font-semibold ${
+            source === "vidsrc" ? "bg-primary text-black" : "bg-white text-black"
+          }`}
+        >
+          Stream with VidSrc
+        </button>
+        <button
+          onClick={() => setSource("twoembed")}
+          className={`px-4 py-2 rounded font-semibold ${
+            source === "twoembed" ? "bg-primary text-black" : "bg-white text-black"
+          }`}
+        >
+          Stream with 2Embed
+        </button>
+      </div>
+
+      <p className="text-light-white mb-6">{overview}</p>
 
       <div className="flex flex-wrap gap-4">
-        {/* ✅ Download Button */}
         <a
           href={downloadLink}
           target="_blank"
@@ -52,13 +95,12 @@ export default async function WatchPage({ params }) {
           ⬇ Download
         </a>
 
-        {/* ✅ Favorite Button */}
         <button
           onClick={() => {
             const key = `cine-fav-${media.id}`;
             const data = {
               id: media.id,
-              title: media.title || media.name,
+              title: title,
               poster: media.poster_path,
               type: media.type,
             };
