@@ -14,9 +14,10 @@ export default function Banner() {
           `https://api.themoviedb.org/3/trending/movie/week?api_key=${apiKey}`
         );
         const data = await res.json();
-        const movies = data.results || [];
+        const movies = data.results?.filter(m => m.backdrop_path) || [];
         const random = movies[Math.floor(Math.random() * movies.length)];
         setMovie(random);
+        console.log("🎬 Banner Movie Loaded:", random?.title);
       } catch (err) {
         console.error("Failed to fetch banner movie", err);
       }
@@ -25,7 +26,7 @@ export default function Banner() {
     fetchTrendingMovie();
   }, [apiKey]);
 
-  if (!movie) return null;
+  if (!movie?.backdrop_path) return <div className="text-neutral-500">No banner available</div>;
 
   return (
     <div className="relative h-[60vh] mb-6 w-full rounded-lg overflow-hidden">
