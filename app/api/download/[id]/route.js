@@ -1,6 +1,10 @@
-export async function GET(request, { params }) {
+export async function GET(req, { params }) {
   const { id } = params;
-  const url = `https://dl.vidsrc.vip/movie/${id}`;
 
-  return Response.redirect(url, 302);
+  if (!id) {
+    return new Response("Movie ID missing", { status: 400 });
+  }
+
+  const redirectUrl = `https://dl.vidsrc.vip/movie/${id}`;
+  return Response.redirect(redirectUrl, 302);
 }
