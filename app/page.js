@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-// import Banner from "@/components/Banner"; // Temporarily disabled
+import Banner from "@/components/Banner";
 import ContinueWatching from "@/components/ContinueWatching";
 import MediaRow from "@/components/MediaRow";
 
@@ -43,8 +43,7 @@ export default function Home() {
         Debug: Home Page Rendered ✅
       </h1>
 
-      {/* Commented out for debugging */}
-      {/* <Banner /> */}
+      <Banner />
 
       <ContinueWatching />
 
