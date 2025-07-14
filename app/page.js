@@ -49,36 +49,37 @@ export default function Home() {
   }, [apiKey]);
 
   return (
-    <main className="text-white px-4">
-      <Banner />
-      <ContinueWatching />
+  <main className="text-white px-4">
+    <Banner />
+    <ContinueWatching />
 
-      <MediaRow
-        title="Trending Movies"
-        items={trendingMovies}
-        type="movie"
-        link="/trending/movies"
-      />
-      <MediaRow
-        title="Trending Series"
-        items={trendingSeries}
-        type="tv"
-        link="/trending/series"
-      />
-      <MediaRow
-        title="New Releases"
-        items={newReleases}
-        type="movie"
-        link="/new-releases"
-      /><pre className="text-xs text-green-400">
-  API: {apiKey ? "✅ KEY LOADED" : "❌ NO KEY"}
-  {"\n"}
-  Movies: {trendingMovies.length}
-  {"\n"}
-  Series: {trendingSeries.length}
-  {"\n"}
-  New: {newReleases.length}
-</pre>
-    </main>
-  );
-}
+    <MediaRow
+      title="Trending Movies"
+      items={trendingMovies}
+      type="movie"
+      link="/trending/movies"
+    />
+    <MediaRow
+      title="Trending Series"
+      items={trendingSeries}
+      type="tv"
+      link="/trending/series"
+    />
+    <MediaRow
+      title="New Releases"
+      items={newReleases}
+      type="movie"
+      link="/new-releases"
+    />
+
+    <pre className="text-xs text-green-400 mt-4">
+      API: {apiKey ? "✅ KEY LOADED" : "❌ NO KEY"}
+      {"\n"}
+      Movies: {trendingMovies.length}
+      {"\n"}
+      Series: {trendingSeries.length}
+      {"\n"}
+      New: {newReleases.length}
+    </pre>
+  </main>
+);
