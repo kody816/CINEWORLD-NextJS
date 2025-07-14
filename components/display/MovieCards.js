@@ -1,35 +1,41 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 
 export default function MovieCards({ results }) {
-  if (!results || !Array.isArray(results)) return null;
-
-  const gridCols = results.length === 1
-    ? "grid-cols-1"
-    : "grid-cols-2 sm:grid-cols-3 md:grid-cols-4";
+  if (!results || results.length === 0) {
+    return (
+      <p className="text-center text-gray-400 mt-10">No results found.</p>
+    );
+  }
 
   return (
-    <div className={`grid ${gridCols} gap-4`}>
-      {results
-        .filter((movie) => movie && movie.poster_path)
-        .map((movie) => (
-          <Link
-            key={movie.id}
-            href={`/watch/${movie.id}`}
-            className="block group relative overflow-hidden rounded-lg"
-          >
-            <Image
-              src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-              alt={movie.title || movie.name}
-              width={500}
-              height={750}
-              className="w-full h-auto object-cover group-hover:opacity-80 transition"
-            />
-            <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-60 text-white text-sm p-2 truncate">
+    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
+      {results.map((movie) => (
+        <Link
+          key={movie.id}
+          href={`/watch/${movie.id}`}
+          className="group relative block overflow-hidden rounded-lg shadow-md hover:shadow-yellow-500 transition-shadow duration-300"
+        >
+          <Image
+            src={
+              movie.poster_path
+                ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+                : "/placeholder-poster.png"
+            }
+            alt={movie.title || movie.name}
+            width={500}
+            height={750}
+            className="w-full h-auto object-cover rounded-lg group-hover:scale-105 transition-transform duration-300"
+          />
+          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black via-transparent px-2 py-1">
+            <h2 className="truncate text-sm font-semibold text-yellow-400">
               {movie.title || movie.name}
-            </div>
-          </Link>
-        ))}
+            </h2>
+          </div>
+        </Link>
+      ))}
     </div>
   );
 }
