@@ -7,7 +7,6 @@ export default function WatchPage() {
   const { id } = useParams();
   const [movie, setMovie] = useState(null);
   const [related, setRelated] = useState([]);
-  const [isFavorited, setIsFavorited] = useState(false);
   const apiKey = process.env.NEXT_PUBLIC_TMDB_API_KEY;
 
   useEffect(() => {
@@ -28,33 +27,12 @@ export default function WatchPage() {
     fetchMovie();
   }, [id, apiKey]);
 
-  useEffect(() => {
-    const stored = JSON.parse(localStorage.getItem("favorites")) || [];
-    setIsFavorited(stored.some((m) => m.id === parseInt(id)));
-  }, [id]);
-
-  const toggleFavorite = () => {
-    const stored = JSON.parse(localStorage.getItem("favorites")) || [];
-    const exists = stored.find((m) => m.id === parseInt(id));
-    let updated;
-
-    if (exists) {
-      updated = stored.filter((m) => m.id !== parseInt(id));
-      setIsFavorited(false);
-    } else {
-      updated = [...stored, movie];
-      setIsFavorited(true);
-    }
-
-    localStorage.setItem("favorites", JSON.stringify(updated));
-  };
-
   if (!movie) return <div className="text-center p-6">Loading...</div>;
 
   return (
     <div className="text-white">
       {/* Hero Banner */}
-      <div className="relative w-full h-screen">
+      <div className="relative w-full h-[60vh] md:h-[70vh] lg:h-screen">
         <Image
           src={`https://image.tmdb.org/t/p/original${movie.backdrop_path}`}
           alt={movie.title}
@@ -67,38 +45,33 @@ export default function WatchPage() {
           <div className="text-sm md:text-base text-neutral-300 mb-3 flex flex-wrap gap-4">
             <span>{movie.release_date?.split("-")[0]}</span>
             <span>{Math.round(movie.vote_average * 10) / 10}/10</span>
-            <span>{movie.genres?.map((g) => g.name).join(", ")}</span>
+            <span>{movie.genres?.map(g => g.name).join(", ")}</span>
           </div>
           <p className="max-w-2xl text-sm md:text-base text-neutral-200 mb-4 line-clamp-4">{movie.overview}</p>
 
           <div className="flex flex-wrap gap-4">
-  <a
-    href={`https://multiembed.mov/directstream.php?video_id=${id}&tmdb=1`}
-    target="_blank"
-    rel="noopener noreferrer"
-    className="bg-yellow-400 hover:bg-yellow-300 text-black px-6 py-2 rounded-md font-semibold transition"
-  >
-    Stream
-  </a>
-  <a
-    href={`https://vidsrc.to/embed/movie/${id}`}
-    target="_blank"
-    rel="noopener noreferrer"
-    className="bg-neutral-800 hover:bg-neutral-700 text-white px-6 py-2 rounded-md font-semibold transition"
-  >
-    Download
-  </a>
-  <button
-    onClick={toggleFavorite}
-    className={`px-6 py-2 rounded-md font-semibold transition border ${
-      isFavorited
-        ? "bg-yellow-400 text-black"
-        : "bg-transparent text-yellow-400 border-yellow-400 hover:bg-yellow-400 hover:text-black"
-    }`}
-  >
-    {isFavorited ? "Favorited" : "Add to Favorites"}
-  </button>
-</div>
+            <a
+              href={`https://vidsrc.to/embed/movie/${id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-yellow-400 hover:bg-yellow-300 text-black px-6 py-2 rounded-md font-semibold transition"
+            >
+              Stream
+            </a>
+            <a
+              href={`https://dl.vidsrc.vip/movie/${id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-neutral-800 hover:bg-neutral-700 text-white px-6 py-2 rounded-md font-semibold transition"
+            >
+              Download
+            </a>
+            <button
+              className="bg-transparent border border-yellow-400 text-yellow-400 px-6 py-2 rounded-md font-semibold hover:bg-yellow-400 hover:text-black transition"
+            >
+              Favorite
+            </button>
+          </div>
         </div>
       </div>
 
