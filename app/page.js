@@ -9,7 +9,7 @@ export default function Home() {
   const [trendingSeries, setTrendingSeries] = useState([]);
   const [newReleases, setNewReleases] = useState([]);
 
-  const apiKey = process.env.NEXT_PUBLIC_TMDB_API_KEY;
+  const apiKey = "f6c83947bb815386f6073e3d3feebe77";
 
   useEffect(() => {
     const fetchData = async () => {
