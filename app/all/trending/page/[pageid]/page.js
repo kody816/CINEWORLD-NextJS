@@ -1,32 +1,21 @@
-import HomeDisplay from "@/components/display/HomeDisplay";
-import Title from "@/components/title/Title";
+import MovieCards from "@/components/display/MovieCards";
+import Pagination from "@/components/display/Pagination";
 
-export async function getData(pageid) {
-  const apiKey = process.env.NEXT_PUBLIC_TMDB_API_KEY;
-
-  const validPage = pageid && parseInt(pageid) > 0 ? pageid : 1;
+export default async function TrendingMoviesPage({ params }) {
+  const page = params.pageid || 1;
 
   const res = await fetch(
-    `https://api.themoviedb.org/3/trending/all/day?api_key=${apiKey}&page=${validPage}`
+    `https://api.themoviedb.org/3/trending/movie/week?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&page=${page}`,
+    { next: { revalidate: 60 } }
   );
 
-  if (!res.ok) {
-    throw new Error("Failed to fetch data");
-  }
-
-  const result = await res.json();
-  const data = result.results;
-
-  return { data, pageid: validPage };
-}
-
-export default async function AllTrending({ params }) {
-  const { data, pageid } = await getData(params.pageid);
+  const data = await res.json();
 
   return (
-    <div className="h-auto">
-      <Title />
-      <HomeDisplay movies={data} pageid={pageid} />
-    </div>
+    <main className="text-white p-4">
+      <h1 className="text-2xl font-bold mb-4">Trending Movies</h1>
+      <MovieCards results={data.results} />
+      <Pagination currentPage={parseInt(page)} basePath="/all/trending/page" totalPages={500} />
+    </main>
   );
 }
