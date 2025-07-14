@@ -67,9 +67,7 @@ export default function WatchPage() {
               Stream
             </a>
             <a
-              href={`/api/download/${id}`}
-              target="_blank"
-              rel="noopener noreferrer"
+              href={`/download/${id}`}
               className="bg-neutral-800 hover:bg-neutral-700 text-white px-6 py-2 rounded-md font-semibold transition"
             >
               Download
