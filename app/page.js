@@ -1,44 +1,30 @@
-import HorizontalSection from "@/components/display/HorizontalSection";
-import HeroBanner from "@/components/display/HeroBanner";
-import ContinueWatching from "@/components/display/ContinueWatching";
+import MediaRow from "@/components/MediaRow";
+import Banner from "@/components/Banner";
+import ContinueWatching from "@/components/ContinueWatching";
 
-async function getSection(url) {
-  const apiKey = process.env.NEXT_PUBLIC_TMDB_API_KEY;
-  const res = await fetch(
-    `https://api.themoviedb.org/3${url}?api_key=${apiKey}&language=en-US`
-  );
+const API_KEY = process.env.NEXT_PUBLIC_TMDB_API_KEY;
+
+async function fetchMovies(endpoint) {
+  const res = await fetch(endpoint, { cache: "no-store" });
   const data = await res.json();
-  return data.results;
+  return data.results?.filter(item => item.poster_path) || [];
 }
 
-export default async function Home() {
+export default async function HomePage() {
   const [trendingMovies, trendingSeries, newReleases] = await Promise.all([
-    getSection("/trending/movie/week"),
-    getSection("/trending/tv/week"),
-    getSection("/movie/now_playing"),
+    fetchMovies(`https://api.themoviedb.org/3/trending/movie/day?api_key=${API_KEY}`),
+    fetchMovies(`https://api.themoviedb.org/3/trending/tv/day?api_key=${API_KEY}`),
+    fetchMovies(`https://api.themoviedb.org/3/movie/now_playing?api_key=${API_KEY}&language=en-US&page=1`),
   ]);
 
-  const featured = trendingMovies[0];
-
   return (
-    <div className="pb-12">
-      <HeroBanner movie={featured} />
+    <main className="text-white">
+      <Banner />
       <ContinueWatching />
-      <HorizontalSection
-        title="Trending Movies"
-        movies={trendingMovies}
-        link="/trending/movie"
-      />
-      <HorizontalSection
-        title="Trending Series"
-        movies={trendingSeries}
-        link="/trending/tv"
-      />
-      <HorizontalSection
-        title="New Releases"
-        movies={newReleases}
-        link="/now-playing"
-      />
-    </div>
+
+      <MediaRow title="Trending Movies" media={trendingMovies.slice(0, 20)} type="movie" link="/trending-movies" />
+      <MediaRow title="Trending Series" media={trendingSeries.slice(0, 20)} type="tv" link="/trending-series" />
+      <MediaRow title="New Releases" media={newReleases.slice(0, 20)} type="movie" link="/new-releases" />
+    </main>
   );
 }
