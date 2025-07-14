@@ -1,6 +1,5 @@
 import "./globals.css";
 import LayoutWrapper from "../components/layout/LayoutWrapper";
-import BottomNav from "../components/layout/BottomNav";
 
 export const metadata = {
   title: "Perez TV",
@@ -10,11 +9,8 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className="bg-black text-white flex flex-col min-h-screen">
+      <body className="bg-black text-white">
         <LayoutWrapper>{children}</LayoutWrapper>
-        <footer>
-          <BottomNav />
-        </footer>
       </body>
     </html>
   );
