@@ -41,7 +41,7 @@ const Search = () => {
   }, [value]);
 
   return (
-    <div className="h-full min-h-screen px-4 pt-4 pb-[80px] md:pb-[100px] bg-black text-white">
+    <div className="min-h-[calc(100vh-56px)] px-4 pb-20 pt-4">
       <SearchTitle />
       <SearchBar onSearch={handleSearch} onTyping={handleTyping} suggestions={suggestions} />
       <SearchDisplay movies={data} />
