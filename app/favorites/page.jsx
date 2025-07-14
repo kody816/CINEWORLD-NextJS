@@ -1,4 +1,5 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -11,37 +12,42 @@ export default function FavoritesPage() {
     setFavorites(stored);
   }, []);
 
-  if (favorites.length === 0) {
-    return (
-      <div className="text-center py-10 text-neutral-400">
-        You haven’t favorited any movies yet.
-      </div>
-    );
-  }
-
   return (
-    <div className="px-4 py-6">
+    <main className="min-h-screen px-4 pb-20 pt-6 bg-gradient-to-t from-[#141414] to-[#080808] text-white">
       <h1 className="text-3xl font-bold mb-6 text-yellow-400">Your Favorites</h1>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-        {favorites.map((movie) => (
-          <Link
-            key={movie.id}
-            href={`/watch/${movie.id}`}
-            className="block group relative overflow-hidden rounded-lg"
-          >
-            <Image
-              src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-              alt={movie.title || movie.name}
-              width={500}
-              height={750}
-              className="w-full h-auto object-cover group-hover:opacity-80 transition"
-            />
-            <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-60 text-white text-sm p-2 truncate">
-              {movie.title || movie.name}
-            </div>
-          </Link>
-        ))}
-      </div>
-    </div>
+
+      {favorites.length === 0 ? (
+        <p className="text-center text-gray-400 mt-20">
+          You haven’t favorited any movies yet.
+        </p>
+      ) : (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
+          {favorites.map((movie) => (
+            <Link
+              key={movie.id}
+              href={`/watch/${movie.id}`}
+              className="group relative block rounded-lg overflow-hidden shadow-lg hover:shadow-yellow-500 transition-shadow duration-300"
+            >
+              <Image
+                src={
+                  movie.poster_path
+                    ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+                    : "/placeholder-poster.png"
+                }
+                alt={movie.title || movie.name}
+                width={500}
+                height={750}
+                className="w-full h-auto object-cover rounded-lg group-hover:scale-105 transition-transform duration-300"
+              />
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black via-transparent px-2 py-1">
+                <h2 className="truncate text-sm font-semibold text-yellow-400">
+                  {movie.title || movie.name}
+                </h2>
+              </div>
+            </Link>
+          ))}
+        </div>
+      )}
+    </main>
   );
 }
