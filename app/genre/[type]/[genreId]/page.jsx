@@ -17,7 +17,7 @@ export default async function GenrePage({ params, searchParams }) {
   const results = await getGenreResults(type, genreId);
 
   return (
-    <main className="min-h-[calc(100vh-56px)] px-4 pb-20 pt-6 bg-gradient-to-t from-[#141414] to-[#080808] text-white">
+    <main className="min-h-[calc(100vh-56px)] px-4 pb-16 pt-6 bg-gradient-to-t from-[#141414] to-[#080808] text-white">
       <h1 className="text-3xl font-bold mb-6 text-yellow-400 capitalize">
         {genreName} ({type === "movie" ? "Movies" : "TV Series"})
       </h1>
