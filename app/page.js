@@ -9,10 +9,17 @@ export default function Home() {
   const [trendingSeries, setTrendingSeries] = useState([]);
   const [newReleases, setNewReleases] = useState([]);
 
-  const apiKey = "f6c83947bb815386f6073e3d3feebe77";
+  const apiKey = process.env.NEXT_PUBLIC_TMDB_API_KEY;
 
   useEffect(() => {
+    console.log("✅ API KEY:", apiKey); // Debugging output
+
     const fetchData = async () => {
+      if (!apiKey) {
+        console.error("❌ Missing TMDb API key!");
+        return;
+      }
+
       try {
         const [trendMoviesRes, trendTVRes, newRes] = await Promise.all([
           fetch(`https://api.themoviedb.org/3/trending/movie/week?api_key=${apiKey}`),
@@ -26,11 +33,15 @@ export default function Home() {
           newRes.json(),
         ]);
 
+        console.log("🎬 Trending Movies:", trendMoviesData);
+        console.log("📺 Trending Series:", trendTVData);
+        console.log("🆕 New Releases:", newReleaseData);
+
         setTrendingMovies(trendMoviesData.results || []);
         setTrendingSeries(trendTVData.results || []);
         setNewReleases(newReleaseData.results || []);
       } catch (err) {
-        console.error("Failed to load data:", err);
+        console.error("🔥 Failed to load TMDb data:", err);
       }
     };
 
@@ -42,9 +53,24 @@ export default function Home() {
       <Banner />
       <ContinueWatching />
 
-      <MediaRow title="Trending Movies" items={trendingMovies} type="movie" link="/trending/movies" />
-      <MediaRow title="Trending Series" items={trendingSeries} type="tv" link="/trending/series" />
-      <MediaRow title="New Releases" items={newReleases} type="movie" link="/new-releases" />
+      <MediaRow
+        title="Trending Movies"
+        items={trendingMovies}
+        type="movie"
+        link="/trending/movies"
+      />
+      <MediaRow
+        title="Trending Series"
+        items={trendingSeries}
+        type="tv"
+        link="/trending/series"
+      />
+      <MediaRow
+        title="New Releases"
+        items={newReleases}
+        type="movie"
+        link="/new-releases"
+      />
     </main>
   );
 }
