@@ -1,29 +1,29 @@
 import Link from "next/link";
 import Image from "next/image";
 
-export default function MovieCards({ results }) {
-  if (!results || !Array.isArray(results)) return null;
+export default function MovieCards({ items = [] }) {
+  if (!Array.isArray(items) || items.length === 0) return null;
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-      {results
-        .filter((movie) => movie && movie.poster_path)
-        .map((movie) => (
+    <div className="flex overflow-x-auto scrollbar-hide space-x-4 py-2">
+      {items
+        .filter((item) => item && item.poster_path)
+        .map((item) => (
           <Link
-            key={movie.id}
-            href={`/watch/${movie.id}`}
-            className="block group relative overflow-hidden rounded-lg"
+            key={item.id}
+            href={`/watch/${item.id}`}
+            className="flex-shrink-0 w-36 md:w-44"
           >
             <Image
-              src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-              alt={movie.title || movie.name}
-              width={500}
-              height={750}
-              className="w-full h-auto object-cover group-hover:opacity-80 transition"
+              src={`https://image.tmdb.org/t/p/w500${item.poster_path}`}
+              alt={item.title || item.name}
+              width={300}
+              height={450}
+              className="rounded-lg hover:scale-105 transition-transform duration-200"
             />
-            <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-60 text-white text-sm p-2 truncate">
-              {movie.title || movie.name}
-            </div>
+            <p className="mt-1 text-sm text-white truncate">
+              {item.title || item.name}
+            </p>
           </Link>
         ))}
     </div>
