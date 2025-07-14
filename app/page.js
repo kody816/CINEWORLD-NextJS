@@ -26,9 +26,9 @@ export default function Home() {
           newRes.json(),
         ]);
 
-        setTrendingMovies(trendMoviesData.results || []);
-        setTrendingSeries(trendTVData.results || []);
-        setNewReleases(newReleaseData.results || []);
+        setTrendingMovies(trendMoviesData.results?.filter(i => i.poster_path) || []);
+        setTrendingSeries(trendTVData.results?.filter(i => i.poster_path) || []);
+        setNewReleases(newReleaseData.results?.filter(i => i.poster_path) || []);
       } catch (err) {
         console.error("Failed to load data:", err);
       }
