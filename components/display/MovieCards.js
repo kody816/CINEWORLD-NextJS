@@ -4,8 +4,12 @@ import Image from "next/image";
 export default function MovieCards({ results }) {
   if (!results || !Array.isArray(results)) return null;
 
+  const gridCols = results.length === 1
+    ? "grid-cols-1"
+    : "grid-cols-2 sm:grid-cols-3 md:grid-cols-4";
+
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+    <div className={`grid ${gridCols} gap-4`}>
       {results
         .filter((movie) => movie && movie.poster_path)
         .map((movie) => (
@@ -29,5 +33,3 @@ export default function MovieCards({ results }) {
     </div>
   );
 }
-
-      
