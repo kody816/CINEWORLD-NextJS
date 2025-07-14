@@ -60,16 +60,6 @@ export default function Home() {
         type="movie"
         link="/new-releases"
       />
-
-      <pre className="text-xs text-green-400 mt-4">
-        API: {apiKey ? "✅ KEY LOADED" : "❌ NO KEY"}
-        {"\n"}
-        Movies: {trendingMovies.length}
-        {"\n"}
-        Series: {trendingSeries.length}
-        {"\n"}
-        New: {newReleases.length}
-      </pre>
     </main>
   );
 }
