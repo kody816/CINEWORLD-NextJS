@@ -27,20 +27,18 @@ export default function Banner() {
     fetchTrendingMovie();
   }, [apiKey]);
 
-  if (!movie) {
-    return (
-      <div className="bg-yellow-700 text-white text-center p-6 rounded-md mt-4">
-        🔄 Fetching banner movie...
-      </div>
-    );
-  }
-
   return (
-    <div className="bg-red-500 text-white text-center p-6 rounded-md mt-4 space-y-2">
-      🧪 Debug: Banner rendered successfully!
-      <div>🎬 Movie: <strong>{movie.title || "No title"}</strong></div>
-      <div>🖼 Image: <strong>{movie.backdrop_path ? "✅ Yes" : "❌ No"}</strong></div>
-      <div>📝 Overview: {movie.overview?.slice(0, 80)}...</div>
+    <div className="bg-yellow-900/90 text-white p-6 rounded-md mt-4 text-center space-y-2">
+      <div className="text-lg font-semibold">🧪 Banner Debug Box</div>
+      {movie ? (
+        <>
+          <div>🎬 Movie: <strong>{movie.title}</strong></div>
+          <div>🖼 Image: {movie.backdrop_path ? "✅ Yes" : "❌ No"}</div>
+          <div>📝 Overview: {movie.overview?.slice(0, 60)}...</div>
+        </>
+      ) : (
+        <div>❌ No movie loaded</div>
+      )}
     </div>
   );
 }
