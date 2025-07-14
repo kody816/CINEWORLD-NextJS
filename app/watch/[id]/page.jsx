@@ -27,7 +27,13 @@ export default function WatchPage() {
     fetchMovie();
   }, [id, apiKey]);
 
-  if (!movie) return <div className="text-center p-6 text-white">Loading...</div>;
+  if (!movie) {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-black">
+      <div className="w-12 h-12 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin"></div>
+    </div>
+  );
+}
 
   return (
     <div className="text-white">
