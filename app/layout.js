@@ -1,3 +1,5 @@
+"use client";
+
 import "./globals.css";
 import TopNav from "../components/layout/TopNav";
 import MobileNav from "../components/layout/MobileNav";
@@ -34,6 +36,7 @@ export default function RootLayout({ children }) {
         <div className="md:hidden">
           <MobileNav />
         </div>
+
       </body>
     </html>
   );
