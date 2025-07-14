@@ -28,15 +28,15 @@ export default function WatchPage() {
   }, [id, apiKey]);
 
   if (!movie) {
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-black">
-      <div className="w-12 h-12 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin"></div>
-    </div>
-  );
-}
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-black">
+        <div className="w-12 h-12 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
 
   return (
-    <div className="text-white">
+    <div className="text-white pt-16 lg:pt-20">
       {/* Hero Banner */}
       <div className="relative w-full h-[60vh] sm:h-[70vh] lg:h-screen">
         <Image
