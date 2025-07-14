@@ -72,33 +72,33 @@ export default function WatchPage() {
           <p className="max-w-2xl text-sm md:text-base text-neutral-200 mb-4 line-clamp-4">{movie.overview}</p>
 
           <div className="flex flex-wrap gap-4">
-            <a
-              href={`https://vidsrc.to/embed/movie/${id}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="bg-yellow-400 hover:bg-yellow-300 text-black px-6 py-2 rounded-md font-semibold transition"
-            >
-              Stream
-            </a>
-            <a
-              href={`https://multiembed.mov/directstream.php?video_id=${id}&tmdb=1`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="bg-neutral-800 hover:bg-neutral-700 text-white px-6 py-2 rounded-md font-semibold transition"
-            >
-              Download
-            </a>
-            <button
-              onClick={toggleFavorite}
-              className={`px-6 py-2 rounded-md font-semibold transition border ${
-                isFavorited
-                  ? "bg-yellow-400 text-black"
-                  : "bg-transparent text-yellow-400 border-yellow-400 hover:bg-yellow-400 hover:text-black"
-              }`}
-            >
-              {isFavorited ? "Favorited" : "Add to Favorites"}
-            </button>
-          </div>
+  <a
+    href={`https://multiembed.mov/directstream.php?video_id=${id}&tmdb=1`}
+    target="_blank"
+    rel="noopener noreferrer"
+    className="bg-yellow-400 hover:bg-yellow-300 text-black px-6 py-2 rounded-md font-semibold transition"
+  >
+    Stream
+  </a>
+  <a
+    href={`https://vidsrc.to/embed/movie/${id}`}
+    target="_blank"
+    rel="noopener noreferrer"
+    className="bg-neutral-800 hover:bg-neutral-700 text-white px-6 py-2 rounded-md font-semibold transition"
+  >
+    Download
+  </a>
+  <button
+    onClick={toggleFavorite}
+    className={`px-6 py-2 rounded-md font-semibold transition border ${
+      isFavorited
+        ? "bg-yellow-400 text-black"
+        : "bg-transparent text-yellow-400 border-yellow-400 hover:bg-yellow-400 hover:text-black"
+    }`}
+  >
+    {isFavorited ? "Favorited" : "Add to Favorites"}
+  </button>
+</div>
         </div>
       </div>
 
