@@ -67,7 +67,7 @@ export default function WatchPage() {
               Stream
             </a>
             <a
-              href={`https://dl.vidsrc.vip/movie/${id}`}
+              href={`/api/download/${id}`}
               target="_blank"
               rel="noopener noreferrer"
               className="bg-neutral-800 hover:bg-neutral-700 text-white px-6 py-2 rounded-md font-semibold transition"
