@@ -2,6 +2,7 @@
 
 import TopNav from "./TopNav";
 import MobileNav from "./MobileNav";
+import BottomNav from "./BottomNav";
 
 export default function LayoutWrapper({ children }) {
   return (
@@ -19,14 +20,19 @@ export default function LayoutWrapper({ children }) {
         <TopNav />
       </div>
 
-      {/* Page content area with header/footer offset */}
+      {/* Main Content with padding */}
       <div className="pt-16 pb-20 lg:pt-0 lg:pb-0">
         {children}
       </div>
 
-      {/* Bottom navigation for mobile + tablet */}
+      {/* Mobile Bottom Nav for phones */}
       <div className="md:hidden">
         <MobileNav />
+      </div>
+
+      {/* Bottom Nav for tablets and desktops */}
+      <div className="hidden md:flex">
+        <BottomNav />
       </div>
     </>
   );
