@@ -1,61 +1,57 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
-import { BiSearch } from "react-icons/bi";
+import React, { useState } from "react";
+import { FaSearch } from "react-icons/fa";
 
-const SearchBar = ({ onSearch, onTyping, suggestions }) => {
-  const searchBarRef = useRef(null);
-  const [searchValue, setSearchValue] = useState("");
+export default function SearchBar({ onSearch, onTyping, suggestions = [] }) {
+  const [input, setInput] = useState("");
 
-  const handleSearch = () => {
-    onSearch(searchValue);
+  const handleChange = (e) => {
+    const val = e.target.value;
+    setInput(val);
+    onTyping(val);
   };
 
-  const handleTyping = (e) => {
-    const value = e.target.value;
-    setSearchValue(value);
-    onTyping(value); // tell parent the new text
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (input.trim()) {
+      onSearch(input);
+    }
   };
 
-  const handleSuggestionClick = (title) => {
-    setSearchValue(title);
-    onSearch(title); // search on click
+  const handleSuggestionClick = (text) => {
+    setInput(text);
+    onTyping(text);
+    onSearch(text);
   };
-
-  useEffect(() => {
-    searchBarRef?.current?.focus?.();
-  }, []);
 
   return (
-    <div className="flex flex-col items-center justify-center mt-6 px-4 w-full relative">
-      <div className="flex w-full max-w-xl">
+    <div className="relative w-full max-w-xl mx-auto mb-4">
+      <form onSubmit={handleSubmit} className="flex items-center bg-neutral-900 rounded-full overflow-hidden border border-neutral-700">
+        <span className="px-4 text-neutral-400">
+          <FaSearch />
+        </span>
         <input
-          value={searchValue}
           type="text"
-          name="search"
-          id="search"
-          placeholder="Search for movies or series..."
-          className="w-full rounded-l-md px-4 py-3 bg-grey text-white outline-none placeholder:text-light-white"
-          onChange={handleTyping}
-          autoComplete="off"
-          ref={searchBarRef}
+          value={input}
+          onChange={handleChange}
+          placeholder="Search movies or series..."
+          className="flex-1 bg-transparent text-white py-3 px-2 focus:outline-none placeholder:text-neutral-500"
         />
         <button
-          aria-label="Search"
-          onClick={handleSearch}
-          className="px-6 py-3 bg-primary text-black font-bold rounded-r-md hover:bg-yellow-300 transition"
+          type="submit"
+          className="bg-yellow-400 text-black font-semibold px-4 py-2 rounded-r-full hover:bg-yellow-300 transition"
         >
-          <BiSearch className="inline text-2xl" />
+          Search
         </button>
-      </div>
+      </form>
 
-      {/* 🔽 Suggestions dropdown */}
-      {suggestions?.length > 0 && (
-        <ul className="absolute top-[100%] mt-1 w-full max-w-xl bg-[#1f1f1f] rounded-md shadow-lg z-50">
-          {suggestions.slice(0, 5).map((item) => (
+      {suggestions.length > 0 && (
+        <ul className="absolute z-10 w-full bg-neutral-900 border border-neutral-700 mt-1 rounded-lg max-h-64 overflow-y-auto shadow-lg">
+          {suggestions.slice(0, 6).map((item) => (
             <li
               key={item.id}
+              className="p-3 hover:bg-neutral-800 text-white cursor-pointer"
               onClick={() => handleSuggestionClick(item.title || item.name)}
-              className="cursor-pointer px-4 py-2 text-white hover:bg-grey border-b border-gray-700 last:border-none"
             >
               {item.title || item.name}
             </li>
@@ -64,6 +60,4 @@ const SearchBar = ({ onSearch, onTyping, suggestions }) => {
       )}
     </div>
   );
-};
-
-export default SearchBar;
+}
