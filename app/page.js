@@ -39,9 +39,11 @@ export default function Home() {
 
   return (
     <main className="px-4 pt-4 pb-24 md:pt-6 md:pb-32 text-white space-y-8">
-      <Banner />
+      <h1 className="text-3xl font-bold text-yellow-400">
+        Debug: Home Page Rendered ✅
+      </h1>
 
-      {/* Optional: remove this section if not needed */}
+      <Banner />
       <ContinueWatching />
 
       <MediaRow
