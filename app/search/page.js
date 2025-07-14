@@ -1,13 +1,14 @@
 "use client";
 import React, { useState } from "react";
+import { FaSearch } from "react-icons/fa";
 
-export default function SearchBar({ onSearch, onTyping, suggestions }) {
+export default function SearchBar({ onSearch, onTyping, suggestions = [] }) {
   const [input, setInput] = useState("");
 
   const handleChange = (e) => {
-    const value = e.target.value;
-    setInput(value);
-    onTyping(value);
+    const val = e.target.value;
+    setInput(val);
+    onTyping(val);
   };
 
   const handleSubmit = (e) => {
@@ -17,34 +18,45 @@ export default function SearchBar({ onSearch, onTyping, suggestions }) {
     }
   };
 
+  const handleSuggestionClick = (text) => {
+    setInput(text);
+    onTyping(text);
+    onSearch(text);
+  };
+
   return (
-    <div className="relative w-full max-w-3xl mx-auto mt-6">
-      <form onSubmit={handleSubmit} className="w-full">
+    <div className="relative w-full max-w-xl mx-auto mb-4">
+      <form onSubmit={handleSubmit} className="flex items-center bg-neutral-900 rounded-full overflow-hidden border border-neutral-700">
+        <span className="px-4 text-neutral-400">
+          <FaSearch />
+        </span>
         <input
           type="text"
-          placeholder="Search movies or series..."
           value={input}
           onChange={handleChange}
-          className="w-full px-5 py-3 rounded-full bg-neutral-900 border border-neutral-700 focus:outline-none focus:border-yellow-400 text-white placeholder-neutral-500 transition-all duration-200"
+          placeholder="Search movies or series..."
+          className="flex-1 bg-transparent text-white py-3 px-2 focus:outline-none placeholder:text-neutral-500"
         />
+        <button
+          type="submit"
+          className="bg-yellow-400 text-black font-semibold px-4 py-2 rounded-r-full hover:bg-yellow-300 transition"
+        >
+          Search
+        </button>
       </form>
 
-      {/* Suggestions Dropdown */}
-      {suggestions?.length > 0 && (
-        <div className="absolute z-10 mt-2 w-full bg-neutral-900 border border-neutral-800 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+      {suggestions.length > 0 && (
+        <ul className="absolute z-10 w-full bg-neutral-900 border border-neutral-700 mt-1 rounded-lg max-h-64 overflow-y-auto shadow-lg">
           {suggestions.slice(0, 6).map((item) => (
-            <div
+            <li
               key={item.id}
-              onClick={() => {
-                onSearch(item.title || item.name);
-                setInput(item.title || item.name);
-              }}
-              className="px-4 py-2 text-white hover:bg-neutral-800 cursor-pointer truncate"
+              className="p-3 hover:bg-neutral-800 text-white cursor-pointer"
+              onClick={() => handleSuggestionClick(item.title || item.name)}
             >
               {item.title || item.name}
-            </div>
+            </li>
           ))}
-        </div>
+        </ul>
       )}
     </div>
   );
