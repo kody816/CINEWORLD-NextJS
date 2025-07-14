@@ -1,8 +1,8 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import Banner from "../components/Banner";
-import ContinueWatching from "../components/ContinueWatching";
-import MediaRow from "../components/MediaRow";
+import Banner from "@/components/Banner";
+import ContinueWatching from "@/components/ContinueWatching";
+import MediaRow from "@/components/MediaRow";
 
 export default function Home() {
   const [trendingMovies, setTrendingMovies] = useState([]);
@@ -38,8 +38,10 @@ export default function Home() {
   }, [apiKey]);
 
   return (
-    <main className="text-white px-4">
+    <main className="px-4 pt-4 pb-24 md:pt-6 md:pb-32 text-white space-y-8">
       <Banner />
+
+      {/* Optional: remove this section if not needed */}
       <ContinueWatching />
 
       <MediaRow
