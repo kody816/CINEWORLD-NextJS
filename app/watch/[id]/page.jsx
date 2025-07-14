@@ -74,19 +74,7 @@ export default function WatchPage() {
             >
               Download
             </a>
-            <button
-              className="bg-transparent border border-yellow-400 text-yellow-400 px-6 py-2 rounded-md font-semibold hover:bg-yellow-400 hover:text-black transition"
-              onClick={() => {
-                const favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
-                const isFavorited = favorites.some(fav => fav.id === movie.id);
-                const updated = isFavorited
-                  ? favorites.filter(fav => fav.id !== movie.id)
-                  : [...favorites, movie];
-                localStorage.setItem("favorites", JSON.stringify(updated));
-              }}
-            >
-              Favorite
-            </button>
+            <FavoriteButton movie={movie} />
           </div>
         </div>
       </div>
