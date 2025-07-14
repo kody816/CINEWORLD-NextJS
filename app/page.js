@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useEffect, useState } from "react";
 import Banner from "@/components/Banner";
 import ContinueWatching from "@/components/ContinueWatching";
@@ -39,10 +40,7 @@ export default function Home() {
 
   return (
     <main className="px-4 pt-4 pb-24 md:pt-6 md:pb-32 text-white space-y-8">
-      <h1 className="text-3xl font-bold text-yellow-400">Perez TV</h1>
-
       <Banner />
-
       <ContinueWatching />
 
       <MediaRow
