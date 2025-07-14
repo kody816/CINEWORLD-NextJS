@@ -1,4 +1,5 @@
 "use client";
+
 import SearchDisplay from "@/components/display/SearchDisplay";
 import SearchBar from "@/components/searchbar/SearchBar";
 import SearchTitle from "@/components/title/SearchTitle";
@@ -15,13 +16,11 @@ const Search = () => {
 
   const handleSearch = (searchValue) => {
     if (!searchValue) return;
-    fetch(
-      `https://api.themoviedb.org/3/search/multi?api_key=${apiKey}&language=en-US&query=${searchValue}`
-    )
+    fetch(`https://api.themoviedb.org/3/search/multi?api_key=${apiKey}&language=en-US&query=${searchValue}`)
       .then((res) => res.json())
       .then((result) => {
         setData(result.results || []);
-        setSuggestions([]); // Clear suggestions
+        setSuggestions([]);
       });
   };
 
@@ -31,9 +30,7 @@ const Search = () => {
 
   useEffect(() => {
     if (value) {
-      fetch(
-        `https://api.themoviedb.org/3/search/multi?api_key=${apiKey}&query=${value}`
-      )
+      fetch(`https://api.themoviedb.org/3/search/multi?api_key=${apiKey}&query=${value}`)
         .then((res) => res.json())
         .then((result) => {
           setSuggestions(result.results || []);
@@ -44,13 +41,9 @@ const Search = () => {
   }, [value]);
 
   return (
-    <div className="h-full px-4 pb-20 pt-4">
+    <div className="h-full min-h-screen px-4 pt-4 pb-[80px] md:pb-[100px] bg-black text-white">
       <SearchTitle />
-      <SearchBar
-        onSearch={handleSearch}
-        onTyping={handleTyping}
-        suggestions={suggestions}
-      />
+      <SearchBar onSearch={handleSearch} onTyping={handleTyping} suggestions={suggestions} />
       <SearchDisplay movies={data} />
     </div>
   );
