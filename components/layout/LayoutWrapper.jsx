@@ -1,4 +1,4 @@
-p"use client";
+"use client";
 
 import TopNav from "./TopNav";
 import MobileNav from "./MobileNav";
