@@ -17,7 +17,7 @@ export default async function GenrePage({ params, searchParams }) {
   const results = await getGenreResults(type, genreId);
 
   return (
-    <main className="min-h-screen px-4 pb-20 pt-6 bg-gradient-to-t from-[#141414] to-[#080808] text-white">
+    <main className="min-h-screen px-4 pt-6 pb-[80px] md:pb-[100px] bg-gradient-to-t from-[#141414] to-[#080808] text-white">
       <h1 className="text-3xl font-bold mb-6 text-yellow-400 capitalize">
         {genreName} ({type === "movie" ? "Movies" : "TV Series"})
       </h1>
@@ -25,9 +25,7 @@ export default async function GenrePage({ params, searchParams }) {
       {results?.length > 0 ? (
         <MovieCards results={results} />
       ) : (
-        <p className="text-center text-gray-400 mt-20">
-          No results found in this genre.
-        </p>
+        <p className="text-center text-gray-400 mt-20">No results found in this genre.</p>
       )}
     </main>
   );
