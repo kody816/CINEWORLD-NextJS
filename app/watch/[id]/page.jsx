@@ -1,173 +1,115 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
 import Image from "next/image";
-import Link from "next/link";
 
-async function getData(id) {
-  const apiKey = process.env.NEXT_PUBLIC_TMDB_API_KEY;
-
-  const res = await fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=${apiKey}&language=en-US`);
-  if (res.ok) return { ...(await res.json()), type: "movie" };
-
-  const tvRes = await fetch(`https://api.themoviedb.org/3/tv/${id}?api_key=${apiKey}&language=en-US`);
-  if (tvRes.ok) return { ...(await tvRes.json()), type: "tv" };
-
-  throw new Error("Failed to fetch media");
-}
-
-async function getRelated(id, type) {
-  const apiKey = process.env.NEXT_PUBLIC_TMDB_API_KEY;
-  const url = `https://api.themoviedb.org/3/${type}/${id}/similar?api_key=${apiKey}&language=en-US&page=1`;
-
-  const res = await fetch(url);
-  const json = await res.json();
-  return json.results || [];
-}
-
-export default function WatchPage({ params }) {
-  const { id } = params;
-  const [media, setMedia] = useState(null);
+export default function WatchPage() {
+  const { id } = useParams();
+  const [movie, setMovie] = useState(null);
   const [related, setRelated] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [showPlayer, setShowPlayer] = useState(true);
-  const [showDownload, setShowDownload] = useState(true);
+  const apiKey = process.env.NEXT_PUBLIC_TMDB_API_KEY;
 
   useEffect(() => {
-    const load = async () => {
+    async function fetchMovie() {
       try {
-        const data = await getData(id);
-        setMedia(data);
+        const res = await fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=${apiKey}&language=en-US`);
+        const data = await res.json();
+        setMovie(data);
 
-        const similar = await getRelated(id, data.type);
-        setRelated(similar);
-        setLoading(false);
+        const similar = await fetch(`https://api.themoviedb.org/3/movie/${id}/similar?api_key=${apiKey}&language=en-US&page=1`);
+        const simData = await similar.json();
+        setRelated(simData.results || []);
       } catch (err) {
-        console.error(err);
-        setLoading(false);
+        console.error("Error loading movie:", err);
       }
-    };
-    load();
-  }, [id]);
+    }
 
-  if (loading || !media) {
-    return (
-      <div className="flex items-center justify-center h-screen text-white">
-        <svg className="animate-spin h-10 w-10 text-yellow-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 00-8 8z" />
-        </svg>
-      </div>
-    );
-  }
+    fetchMovie();
+  }, [id, apiKey]);
 
-  const title = media.title || media.name;
-  const year = media.release_date?.slice(0, 4) || "N/A";
-  const rating = media.vote_average?.toFixed(1) || "N/A";
-  const genres = media.genres?.map(g => g.name).join(", ") || "Unknown";
-  const overview = media.overview || "No description available";
-  const poster = media.poster_path ? `https://image.tmdb.org/t/p/w300${media.poster_path}` : "";
-
-  const streamLink = `https://multiembed.mov/?video_id=${id}&tmdb=1`;
-  const downloadLink = `https://dl.vidsrc.vip/movie/${id}`;
+  if (!movie) return <div className="text-center p-6">Loading...</div>;
 
   return (
-    <div className="p-4 max-w-screen-lg mx-auto text-white">
-      <div className="flex flex-col sm:flex-row gap-6 mb-6">
-        {poster && (
-          <Image
-            src={poster}
-            alt={title}
-            width={300}
-            height={450}
-            className="rounded-md object-cover"
-          />
-        )}
-
-        <div className="flex-1">
-          <h1 className="text-3xl font-bold mb-2">{title}</h1>
-          <div className="text-sm text-gray-400 mb-4">
-            <span className="mr-3">📅 {year}</span>
-            <span className="mr-3">⭐ {rating}</span>
-            <span>🎭 {genres}</span>
+    <div className="text-white">
+      {/* Hero Banner */}
+      <div className="relative w-full h-[60vh] md:h-[70vh] lg:h-screen">
+        <Image
+          src={`https://image.tmdb.org/t/p/original${movie.backdrop_path}`}
+          alt={movie.title}
+          fill
+          className="object-cover"
+          priority
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-transparent p-6 flex flex-col justify-end">
+          <h1 className="text-3xl md:text-5xl font-bold mb-2">{movie.title}</h1>
+          <div className="text-sm md:text-base text-neutral-300 mb-3 flex flex-wrap gap-4">
+            <span>{movie.release_date?.split("-")[0]}</span>
+            <span>{Math.round(movie.vote_average * 10) / 10}/10</span>
+            <span>{movie.genres?.map(g => g.name).join(", ")}</span>
           </div>
-
-          <p className="text-light-white mb-4">{overview}</p>
+          <p className="max-w-2xl text-sm md:text-base text-neutral-200 mb-4 line-clamp-4">{movie.overview}</p>
 
           <div className="flex flex-wrap gap-4">
-            {showPlayer && (
-              <button
-                onClick={() => setShowPlayer(true)}
-                className="bg-primary text-black px-5 py-2 rounded font-semibold hover:bg-yellow-400 transition"
-              >
-                ▶️ Stream
-              </button>
-            )}
-
-            {showDownload && (
+            {id && (
               <a
-                href={downloadLink}
+                href={`https://vidsrc.to/embed/movie/${id}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="bg-white text-black px-5 py-2 rounded font-semibold hover:bg-gray-200 transition"
+                className="bg-yellow-400 hover:bg-yellow-300 text-black px-6 py-2 rounded-md font-semibold transition"
               >
-                ⬇️ Download
+                Watch
               </a>
             )}
-
+            {id && (
+              <a
+                href={`https://multiembed.mov/directstream.php?video_id=${id}&tmdb=1`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-neutral-800 hover:bg-neutral-700 text-white px-6 py-2 rounded-md font-semibold transition"
+              >
+                Download
+              </a>
+            )}
             <button
-              onClick={() => {
-                const key = `cine-fav-${media.id}`;
-                const data = {
-                  id: media.id,
-                  title,
-                  poster: media.poster_path,
-                  type: media.type,
-                };
-                localStorage.setItem(key, JSON.stringify(data));
-                alert("Added to favorites!");
-              }}
-              className="bg-white text-black px-5 py-2 rounded font-semibold hover:bg-gray-200 transition"
+              className="bg-transparent border border-yellow-400 text-yellow-400 px-6 py-2 rounded-md font-semibold hover:bg-yellow-400 hover:text-black transition"
             >
-              ❤️ Favorite
+              Favorite
             </button>
           </div>
         </div>
       </div>
 
-      {/* Player */}
-      {showPlayer && (
-        <div className="aspect-w-16 aspect-h-9 mb-6">
+      {/* Embed Player */}
+      <div className="aspect-video mt-6 px-4">
+        {id ? (
           <iframe
-            src={streamLink}
+            src={`https://vidsrc.to/embed/movie/${id}`}
             allowFullScreen
-            className="w-full h-full rounded-md"
-            onError={() => setShowPlayer(false)}
+            className="w-full h-full rounded-md border border-neutral-800"
           />
-        </div>
-      )}
+        ) : (
+          <div className="text-center text-neutral-400">Video not available</div>
+        )}
+      </div>
 
       {/* Related Movies */}
       {related.length > 0 && (
-        <div className="mt-10">
+        <div className="mt-10 px-4">
           <h2 className="text-2xl font-bold mb-4">Related Movies</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-            {related.slice(0, 10).map((movie) => (
-              <Link key={movie.id} href={`/watch/${movie.id}`}>
-                <div className="bg-[#1c1c1c] rounded-md overflow-hidden hover:scale-105 transition">
-                  <Image
-                    src={
-                      movie.poster_path
-                        ? `https://image.tmdb.org/t/p/w300${movie.poster_path}`
-                        : "https://i.imgur.com/wjVuAGb.png"
-                    }
-                    alt={movie.title || movie.name}
-                    width={200}
-                    height={300}
-                    className="w-full h-auto object-cover"
-                  />
-                  <p className="p-2 text-sm text-white truncate">{movie.title || movie.name}</p>
-                </div>
-              </Link>
+          <div className="flex overflow-x-auto gap-4 pb-2">
+            {related.map((movie) => (
+              <a
+                key={movie.id}
+                href={`/watch/${movie.id}`}
+                className="flex-shrink-0 w-[45%] sm:w-[30%] md:w-[20%] lg:w-[16%] hover:opacity-80 transition"
+              >
+                <img
+                  src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+                  alt={movie.title}
+                  className="w-full rounded-md"
+                />
+                <p className="text-sm mt-1">{movie.title}</p>
+              </a>
             ))}
           </div>
         </div>
