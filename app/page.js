@@ -39,7 +39,7 @@ export default function Home() {
   }, [apiKey]);
 
   return (
-    <main className="px-4 pt-4 pb-[80px] md:pb-[100px] text-white space-y-8">
+    <main className="min-h-[calc(100vh-56px)] px-4 pt-4 pb-20 md:pt-6 md:pb-24 text-white space-y-8">
       <Banner />
       <ContinueWatching />
       <MediaRow title="Trending Movies" items={trendingMovies} type="movie" link="/all/trending/page/1" />
