@@ -36,7 +36,7 @@ export default function WatchPage() {
   }
 
   return (
-    <div className="text-white pt-16 lg:pt-20">
+    <div className="text-white pt-0">
       {/* Hero Banner */}
       <div className="relative w-full h-[60vh] sm:h-[70vh] lg:h-screen">
         <Image
