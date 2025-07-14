@@ -1,25 +1,26 @@
+"use client";
 import React from "react";
-import Image from "next/image";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 
-const MovieCards = ({ MovieCard }) => {
-  let poster_path = `https://image.tmdb.org/t/p/w342/${MovieCard.poster_path}`;
-  if (MovieCard.poster_path == null) {
-    poster_path = "https://i.imgur.com/wjVuAGb.png";
-  }
+const MovieCards = ({ movie }) => {
+  const router = useRouter();
+  const image = movie.poster_path
+    ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+    : "/placeholder.png";
 
   return (
-    <div className="w-40 sm:w-48 md:w-52 lg:w-56 h-auto bg-grey m-2 hover:opacity-75 shadow-md transition-all duration-200">
-      <Link href={`/watch/${MovieCard.id}`}>
-        <Image
-          src={poster_path}
-          alt={MovieCard.title || MovieCard.name}
-          className="rounded w-full h-full object-cover"
-          width={300}
-          height={450}
-          unoptimized
-        />
-      </Link>
+    <div
+      className="min-w-[130px] md:min-w-[160px] lg:min-w-[180px] cursor-pointer"
+      onClick={() => router.push(`/watch/${movie.id}`)}
+    >
+      <img
+        src={image}
+        alt={movie.title || movie.name}
+        className="rounded-md hover:scale-105 transition"
+      />
+      <h3 className="text-white text-sm mt-1 line-clamp-1">
+        {movie.title || movie.name}
+      </h3>
     </div>
   );
 };
