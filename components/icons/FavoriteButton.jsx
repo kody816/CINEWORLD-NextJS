@@ -28,6 +28,15 @@ export default function FavoriteButton({ movie }) {
   };
 
   return (
-    <FavoriteButton movie={movie} />
+    <button
+      onClick={toggleFavorite}
+      className={`px-6 py-2 rounded-md font-semibold transition border ${
+        isFavorited
+          ? "bg-yellow-400 text-black border-yellow-400"
+          : "bg-transparent text-yellow-400 border-yellow-400 hover:bg-yellow-400 hover:text-black"
+      }`}
+    >
+      {isFavorited ? "Favorited" : "Add to Favorites"}
+    </button>
   );
 }
