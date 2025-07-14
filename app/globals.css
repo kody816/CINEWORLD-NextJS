@@ -15,15 +15,14 @@ body {
   background-image: linear-gradient(to top, #141414 0%, rgb(8, 8, 8) 100%);
 }
 
-/* 🔹 App Wrapper (fix extra space) */
-#__next,
-body > div {
+/* 🔹 App Wrapper */
+#__next {
   display: flex;
   flex-direction: column;
   min-height: 100%;
 }
 
-/* 🔹 Main tag (pages) layout fix */
+/* 🔹 Main tag layout */
 main {
   flex: 1;
   width: 100%;
@@ -31,7 +30,7 @@ main {
   box-sizing: border-box;
 }
 
-/* 🔹 Hide Scrollbars Globally */
+/* 🔹 Hide Scrollbars */
 .scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -40,13 +39,13 @@ main {
   display: none;
 }
 
-/* 🔹 Universal Image Fix */
+/* 🔹 Image Fix */
 img {
   max-width: 100%;
   height: auto;
 }
 
-/* 🔹 Search Suggestion Dropdown */
+/* 🔹 Search Suggestions */
 .suggestion-item {
   @apply block px-4 py-2 text-white hover:bg-gray-800 transition;
 }
