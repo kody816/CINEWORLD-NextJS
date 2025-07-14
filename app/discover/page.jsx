@@ -1,52 +1,55 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import MediaRow from "@/components/MediaRow";
+import Image from "next/image";
+import Link from "next/link";
+
+const apiKey = process.env.NEXT_PUBLIC_TMDB_API_KEY;
 
 export default function DiscoverPage() {
-  const [popularMovies, setPopularMovies] = useState([]);
-  const [popularSeries, setPopularSeries] = useState([]);
-  const [topRatedMovies, setTopRatedMovies] = useState([]);
-  const [topRatedSeries, setTopRatedSeries] = useState([]);
-
-  const apiKey = process.env.NEXT_PUBLIC_TMDB_API_KEY;
+  const [movies, setMovies] = useState([]);
 
   useEffect(() => {
-    async function fetchData() {
+    async function fetchDiscover() {
       try {
-        const [popularMoviesRes, popularSeriesRes, topMoviesRes, topSeriesRes] = await Promise.all([
-          fetch(`https://api.themoviedb.org/3/movie/popular?api_key=${apiKey}&language=en-US&page=1`),
-          fetch(`https://api.themoviedb.org/3/tv/popular?api_key=${apiKey}&language=en-US&page=1`),
-          fetch(`https://api.themoviedb.org/3/movie/top_rated?api_key=${apiKey}&language=en-US&page=1`),
-          fetch(`https://api.themoviedb.org/3/tv/top_rated?api_key=${apiKey}&language=en-US&page=1`),
-        ]);
-
-        const [popularMoviesData, popularSeriesData, topMoviesData, topSeriesData] = await Promise.all([
-          popularMoviesRes.json(),
-          popularSeriesRes.json(),
-          topMoviesRes.json(),
-          topSeriesRes.json(),
-        ]);
-
-        setPopularMovies(popularMoviesData.results || []);
-        setPopularSeries(popularSeriesData.results || []);
-        setTopRatedMovies(topMoviesData.results || []);
-        setTopRatedSeries(topSeriesData.results || []);
+        const res = await fetch(
+          `https://api.themoviedb.org/3/discover/movie?api_key=${apiKey}&sort_by=popularity.desc&page=1`
+        );
+        const data = await res.json();
+        setMovies(data.results || []);
       } catch (err) {
-        console.error("Failed to load discovery data:", err);
+        console.error("Failed to fetch discover movies:", err);
       }
     }
 
-    fetchData();
-  }, [apiKey]);
+    fetchDiscover();
+  }, []);
 
   return (
-    <div className="px-4 pt-4 text-white">
-      <h1 className="text-2xl font-bold mb-4">Discover</h1>
+    <div className="p-4">
+      <h1 className="text-2xl font-bold text-yellow-400 mb-4">Discover</h1>
 
-      <MediaRow title="Popular Movies" items={popularMovies} type="movie" />
-      <MediaRow title="Popular TV Series" items={popularSeries} type="tv" />
-      <MediaRow title="Top Rated Movies" items={topRatedMovies} type="movie" />
-      <MediaRow title="Top Rated TV Series" items={topRatedSeries} type="tv" />
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+        {movies
+          .filter((movie) => movie.poster_path)
+          .map((movie) => (
+            <Link
+              key={movie.id}
+              href={`/watch/${movie.id}`}
+              className="group relative overflow-hidden rounded-lg shadow-md"
+            >
+              <Image
+                src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+                alt={movie.title}
+                width={500}
+                height={750}
+                className="w-full h-auto object-cover group-hover:opacity-80 transition"
+              />
+              <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-60 text-white text-xs p-2 truncate">
+                {movie.title}
+              </div>
+            </Link>
+          ))}
+      </div>
     </div>
   );
 }
