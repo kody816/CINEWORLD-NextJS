@@ -1,117 +1,51 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import { useDebounce } from "use-debounce";
-import SearchDisplay from "@/components/display/SearchDisplay";
-import SearchBar from "@/components/searchbar/SearchBar";
-import SearchTitle from "@/components/title/SearchTitle";
+import React, { useState } from "react";
 
-const apiKey = process.env.NEXT_PUBLIC_TMDB_API_KEY;
+export default function SearchBar({ onSearch, onTyping, suggestions }) {
+  const [input, setInput] = useState("");
 
-const Search = () => {
-  const [data, setData] = useState([]);
-  const [suggestions, setSuggestions] = useState([]);
-  const [typedValue, setTypedValue] = useState("");
-  const [value] = useDebounce(typedValue, 500);
-  const [isLoading, setIsLoading] = useState(false);
-  const [searchHistory, setSearchHistory] = useState([]);
-
-  const handleSearch = (searchValue) => {
-    if (!searchValue) return;
-    setIsLoading(true);
-    fetch(
-      `https://api.themoviedb.org/3/search/multi?api_key=${apiKey}&language=en-US&query=${searchValue}`
-    )
-      .then((res) => res.json())
-      .then((result) => {
-        setData(result.results || []);
-        setIsLoading(false);
-        updateHistory(searchValue);
-      });
+  const handleChange = (e) => {
+    const value = e.target.value;
+    setInput(value);
+    onTyping(value);
   };
 
-  const handleTyping = (value) => {
-    setTypedValue(value);
-  };
-
-  const updateHistory = (term) => {
-    let prev = JSON.parse(localStorage.getItem("searchHistory")) || [];
-    if (!prev.includes(term)) {
-      prev.unshift(term);
-      if (prev.length > 5) prev.pop();
-      localStorage.setItem("searchHistory", JSON.stringify(prev));
-      setSearchHistory(prev);
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (input.trim()) {
+      onSearch(input);
     }
   };
-
-  const clearHistory = () => {
-    localStorage.removeItem("searchHistory");
-    setSearchHistory([]);
-  };
-
-  useEffect(() => {
-    const saved = JSON.parse(localStorage.getItem("searchHistory")) || [];
-    setSearchHistory(saved);
-  }, []);
-
-  useEffect(() => {
-    if (value) {
-      fetch(
-        `https://api.themoviedb.org/3/search/multi?api_key=${apiKey}&query=${value}`
-      )
-        .then((res) => res.json())
-        .then((result) => {
-          setSuggestions(result.results || []);
-        });
-    } else {
-      setSuggestions([]);
-    }
-  }, [value]);
 
   return (
-    <div className="h-full px-4 pb-24">
-      <SearchTitle />
-      <SearchBar
-        onSearch={handleSearch}
-        onTyping={handleTyping}
-        suggestions={suggestions}
-      />
+    <div className="relative w-full max-w-3xl mx-auto mt-6">
+      <form onSubmit={handleSubmit} className="w-full">
+        <input
+          type="text"
+          placeholder="Search movies or series..."
+          value={input}
+          onChange={handleChange}
+          className="w-full px-5 py-3 rounded-full bg-neutral-900 border border-neutral-700 focus:outline-none focus:border-yellow-400 text-white placeholder-neutral-500 transition-all duration-200"
+        />
+      </form>
 
-      {/* Recent Search History */}
-      {searchHistory.length > 0 && (
-        <div className="mt-4 text-sm text-neutral-400">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="font-semibold text-white">Recent Searches</h3>
-            <button
-              className="text-xs text-red-400 hover:underline"
-              onClick={clearHistory}
+      {/* Suggestions Dropdown */}
+      {suggestions?.length > 0 && (
+        <div className="absolute z-10 mt-2 w-full bg-neutral-900 border border-neutral-800 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+          {suggestions.slice(0, 6).map((item) => (
+            <div
+              key={item.id}
+              onClick={() => {
+                onSearch(item.title || item.name);
+                setInput(item.title || item.name);
+              }}
+              className="px-4 py-2 text-white hover:bg-neutral-800 cursor-pointer truncate"
             >
-              Clear
-            </button>
-          </div>
-          <ul className="flex flex-wrap gap-2">
-            {searchHistory.map((term, idx) => (
-              <li
-                key={idx}
-                className="bg-neutral-800 px-3 py-1 rounded-full text-white hover:bg-yellow-500 hover:text-black transition cursor-pointer"
-                onClick={() => handleSearch(term)}
-              >
-                {term}
-              </li>
-            ))}
-          </ul>
+              {item.title || item.name}
+            </div>
+          ))}
         </div>
-      )}
-
-      {/* Spinner or Results */}
-      {isLoading ? (
-        <div className="flex justify-center mt-12">
-          <div className="w-8 h-8 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin" />
-        </div>
-      ) : (
-        <SearchDisplay movies={data} />
       )}
     </div>
   );
-};
-
-export default Search;
+}
