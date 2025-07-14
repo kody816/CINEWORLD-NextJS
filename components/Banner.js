@@ -14,7 +14,7 @@ export default function Banner() {
           `https://api.themoviedb.org/3/trending/movie/week?api_key=${apiKey}`
         );
         const data = await res.json();
-        const movies = data.results?.filter(m => m.backdrop_path) || [];
+        const movies = data.results || [];
         const random = movies[Math.floor(Math.random() * movies.length)];
         setMovie(random);
         console.log("🎬 Banner Movie Loaded:", random?.title);
@@ -26,10 +26,15 @@ export default function Banner() {
     fetchTrendingMovie();
   }, [apiKey]);
 
-  if (!movie?.backdrop_path) return <div className="text-neutral-500">No banner available</div>;
+  if (!movie) return null;
 
   return (
     <div className="relative h-[60vh] mb-6 w-full rounded-lg overflow-hidden">
+      {/* Debug message visible on screen */}
+      <div className="absolute top-2 left-2 z-50 bg-black/70 text-yellow-400 text-xs px-2 py-1 rounded">
+        🎬 Banner Loaded: {movie?.title || "None"}
+      </div>
+
       <Image
         src={`https://image.tmdb.org/t/p/original${movie.backdrop_path}`}
         alt={movie.title || "Movie"}
@@ -37,6 +42,7 @@ export default function Banner() {
         className="object-cover"
         priority
       />
+
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/60 to-transparent flex flex-col justify-end p-6">
         <h2 className="text-2xl md:text-4xl font-bold text-white mb-2">
           {movie.title}
