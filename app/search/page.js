@@ -21,11 +21,12 @@ const Search = () => {
       .then((res) => res.json())
       .then((result) => {
         setData(result.results || []);
+        setSuggestions([]); // Clear suggestions
       });
   };
 
-  const handleTyping = (value) => {
-    setTypedValue(value);
+  const handleTyping = (val) => {
+    setTypedValue(val);
   };
 
   useEffect(() => {
@@ -43,7 +44,7 @@ const Search = () => {
   }, [value]);
 
   return (
-    <div className="h-full px-4 pb-10">
+    <div className="h-full px-4 pb-20 pt-4">
       <SearchTitle />
       <SearchBar
         onSearch={handleSearch}
