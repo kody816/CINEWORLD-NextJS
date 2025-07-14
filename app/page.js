@@ -43,23 +43,23 @@ export default function Home() {
       <ContinueWatching />
 
       <MediaRow
-        title="Trending Movies"
-        items={trendingMovies}
-        type="movie"
-        link="/trending/movies"
-      />
-      <MediaRow
-        title="Trending Series"
-        items={trendingSeries}
-        type="tv"
-        link="/trending/series"
-      />
-      <MediaRow
-        title="New Releases"
-        items={newReleases}
-        type="movie"
-        link="/new-releases"
-      />
+  title="Trending Movies"
+  items={trendingMovies}
+  type="movie"
+  link="/all/trending/page/1"
+/>
+<MediaRow
+  title="Trending Series"
+  items={trendingSeries}
+  type="tv"
+  link="/all/series/page/1"
+/>
+<MediaRow
+  title="New Releases"
+  items={newReleases}
+  type="movie"
+  link="/all/releases/page/1"
+/>
     </main>
   );
 }
