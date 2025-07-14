@@ -1,31 +1,28 @@
-// components/display/HorizontalSection.js
 "use client";
 import React from "react";
-import Link from "next/link";
 import MovieCards from "./MovieCards";
+import Link from "next/link";
 
-const HorizontalSection = ({ title, movies, type, link }) => {
+const HorizontalSection = ({ title, movies = [], link }) => {
   return (
-    <div className="mb-8 px-4">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl sm:text-2xl font-semibold text-white">
-          {title}
-        </h2>
+    <section className="mb-6 px-4">
+      <div className="flex justify-between items-center mb-3">
+        <h2 className="text-xl font-semibold text-white">{title}</h2>
         {link && (
           <Link
             href={link}
-            className="text-sm text-primary hover:underline font-medium"
+            className="text-sm text-yellow-400 hover:underline"
           >
-            See All
+            View all →
           </Link>
         )}
       </div>
-      <div className="flex overflow-x-scroll scrollbar-hide space-x-4">
+      <div className="flex space-x-4 overflow-x-auto scrollbar-hide">
         {movies.map((movie) => (
-          <MovieCards key={movie.id} MovieCard={movie} />
+          <MovieCards key={movie.id} movie={movie} />
         ))}
       </div>
-    </div>
+    </section>
   );
 };
 
