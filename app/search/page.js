@@ -1,63 +1,58 @@
 "use client";
-import React, { useState } from "react";
-import { FaSearch } from "react-icons/fa";
+import SearchDisplay from "@/components/display/SearchDisplay";
+import SearchBar from "@/components/searchbar/SearchBar";
+import SearchTitle from "@/components/title/SearchTitle";
+import React, { useEffect, useState } from "react";
+import { useDebounce } from "use-debounce";
 
-export default function SearchBar({ onSearch, onTyping, suggestions = [] }) {
-  const [input, setInput] = useState("");
+const apiKey = process.env.NEXT_PUBLIC_TMDB_API_KEY;
 
-  const handleChange = (e) => {
-    const val = e.target.value;
-    setInput(val);
-    onTyping(val);
+const Search = () => {
+  const [data, setData] = useState([]);
+  const [suggestions, setSuggestions] = useState([]);
+  const [typedValue, setTypedValue] = useState("");
+  const [value] = useDebounce(typedValue, 500);
+
+  const handleSearch = (searchValue) => {
+    if (!searchValue) return;
+    fetch(
+      `https://api.themoviedb.org/3/search/multi?api_key=${apiKey}&language=en-US&query=${searchValue}`
+    )
+      .then((res) => res.json())
+      .then((result) => {
+        setData(result.results || []);
+      });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (input.trim()) {
-      onSearch(input);
+  const handleTyping = (value) => {
+    setTypedValue(value);
+  };
+
+  useEffect(() => {
+    if (value) {
+      fetch(
+        `https://api.themoviedb.org/3/search/multi?api_key=${apiKey}&query=${value}`
+      )
+        .then((res) => res.json())
+        .then((result) => {
+          setSuggestions(result.results || []);
+        });
+    } else {
+      setSuggestions([]);
     }
-  };
-
-  const handleSuggestionClick = (text) => {
-    setInput(text);
-    onTyping(text);
-    onSearch(text);
-  };
+  }, [value]);
 
   return (
-    <div className="relative w-full max-w-xl mx-auto mb-4">
-      <form onSubmit={handleSubmit} className="flex items-center bg-neutral-900 rounded-full overflow-hidden border border-neutral-700">
-        <span className="px-4 text-neutral-400">
-          <FaSearch />
-        </span>
-        <input
-          type="text"
-          value={input}
-          onChange={handleChange}
-          placeholder="Search movies or series..."
-          className="flex-1 bg-transparent text-white py-3 px-2 focus:outline-none placeholder:text-neutral-500"
-        />
-        <button
-          type="submit"
-          className="bg-yellow-400 text-black font-semibold px-4 py-2 rounded-r-full hover:bg-yellow-300 transition"
-        >
-          Search
-        </button>
-      </form>
-
-      {suggestions.length > 0 && (
-        <ul className="absolute z-10 w-full bg-neutral-900 border border-neutral-700 mt-1 rounded-lg max-h-64 overflow-y-auto shadow-lg">
-          {suggestions.slice(0, 6).map((item) => (
-            <li
-              key={item.id}
-              className="p-3 hover:bg-neutral-800 text-white cursor-pointer"
-              onClick={() => handleSuggestionClick(item.title || item.name)}
-            >
-              {item.title || item.name}
-            </li>
-          ))}
-        </ul>
-      )}
+    <div className="h-full px-4 pb-10">
+      <SearchTitle />
+      <SearchBar
+        onSearch={handleSearch}
+        onTyping={handleTyping}
+        suggestions={suggestions}
+      />
+      <SearchDisplay movies={data} />
     </div>
   );
-}
+};
+
+export default Search;
