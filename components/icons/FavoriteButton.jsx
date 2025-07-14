@@ -5,11 +5,13 @@ export default function FavoriteButton({ movie }) {
   const [isFavorited, setIsFavorited] = useState(false);
 
   useEffect(() => {
+    if (!movie?.id) return;
     const stored = JSON.parse(localStorage.getItem("favorites")) || [];
     setIsFavorited(stored.some((m) => m.id === movie.id));
-  }, [movie]);
+  }, [movie?.id]);
 
   const toggleFavorite = () => {
+    if (!movie?.id) return;
     const stored = JSON.parse(localStorage.getItem("favorites")) || [];
     const exists = stored.find((m) => m.id === movie.id);
     let updated;
