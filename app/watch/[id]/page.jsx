@@ -7,6 +7,7 @@ export default function WatchPage() {
   const { id } = useParams();
   const [movie, setMovie] = useState(null);
   const [related, setRelated] = useState([]);
+  const [isFavorited, setIsFavorited] = useState(false);
   const apiKey = process.env.NEXT_PUBLIC_TMDB_API_KEY;
 
   useEffect(() => {
@@ -27,11 +28,40 @@ export default function WatchPage() {
     fetchMovie();
   }, [id, apiKey]);
 
+  // Load favorite state
+  useEffect(() => {
+    if (movie) {
+      const stored = JSON.parse(localStorage.getItem("favorites")) || [];
+      setIsFavorited(stored.some((fav) => fav.id === movie.id));
+    }
+  }, [movie]);
+
+  const toggleFavorite = () => {
+    const stored = JSON.parse(localStorage.getItem("favorites")) || [];
+    const exists = stored.find((fav) => fav.id === movie.id);
+
+    let updated;
+    if (exists) {
+      updated = stored.filter((fav) => fav.id !== movie.id);
+      setIsFavorited(false);
+    } else {
+      updated = [...stored, {
+        id: movie.id,
+        title: movie.title,
+        name: movie.name,
+        poster_path: movie.poster_path,
+      }];
+      setIsFavorited(true);
+    }
+
+    localStorage.setItem("favorites", JSON.stringify(updated));
+  };
+
   if (!movie) return <div className="text-center p-6">Loading...</div>;
 
   return (
     <div className="text-white">
-      {/* Hero Banner */}
+      {/* Banner */}
       <div className="relative w-full h-[60vh] md:h-[70vh] lg:h-screen">
         <Image
           src={`https://image.tmdb.org/t/p/original${movie.backdrop_path}`}
@@ -45,9 +75,11 @@ export default function WatchPage() {
           <div className="text-sm md:text-base text-neutral-300 mb-3 flex flex-wrap gap-4">
             <span>{movie.release_date?.split("-")[0]}</span>
             <span>{Math.round(movie.vote_average * 10) / 10}/10</span>
-            <span>{movie.genres?.map(g => g.name).join(", ")}</span>
+            <span>{movie.genres?.map((g) => g.name).join(", ")}</span>
           </div>
-          <p className="max-w-2xl text-sm md:text-base text-neutral-200 mb-4 line-clamp-4">{movie.overview}</p>
+          <p className="max-w-2xl text-sm md:text-base text-neutral-200 mb-4 line-clamp-4">
+            {movie.overview}
+          </p>
 
           <div className="flex flex-wrap gap-4">
             <a
@@ -67,15 +99,20 @@ export default function WatchPage() {
               Download
             </a>
             <button
-              className="bg-transparent border border-yellow-400 text-yellow-400 px-6 py-2 rounded-md font-semibold hover:bg-yellow-400 hover:text-black transition"
+              onClick={toggleFavorite}
+              className={`px-6 py-2 rounded-md font-semibold transition border ${
+                isFavorited
+                  ? "bg-yellow-400 text-black border-yellow-400"
+                  : "border-yellow-400 text-yellow-400 hover:bg-yellow-400 hover:text-black"
+              }`}
             >
-              Favorite
+              {isFavorited ? "Unfavorite" : "Favorite"}
             </button>
           </div>
         </div>
       </div>
 
-      {/* Embed Player */}
+      {/* Embedded Player */}
       <div className="aspect-video mt-6 px-4">
         {id ? (
           <iframe
