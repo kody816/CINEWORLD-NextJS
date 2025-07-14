@@ -70,7 +70,15 @@ export default function Home() {
         items={newReleases}
         type="movie"
         link="/new-releases"
-      />
+      /><pre className="text-xs text-green-400">
+  API: {apiKey ? "✅ KEY LOADED" : "❌ NO KEY"}
+  {"\n"}
+  Movies: {trendingMovies.length}
+  {"\n"}
+  Series: {trendingSeries.length}
+  {"\n"}
+  New: {newReleases.length}
+</pre>
     </main>
   );
 }
