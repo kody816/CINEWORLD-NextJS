@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
-import FavoriteButton from "../../../components/icons/favoriteButton";
+import FavoriteButton from "../../../components/icons/FavoriteButton";
 
 export default function WatchPage() {
   const { id } = useParams();
