@@ -1,18 +1,17 @@
 "use client";
-
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   HomeIcon,
-  MagnifyingGlassIcon,
+  SearchIcon,
   SparklesIcon,
   HeartIcon,
   FilmIcon,
-} from "@heroicons/react/24/solid";
+} from "@heroicons/react/solid";
 
 const navItems = [
   { name: "Home", href: "/", icon: HomeIcon },
-  { name: "Search", href: "/search", icon: MagnifyingGlassIcon },
+  { name: "Search", href: "/search", icon: SearchIcon },
   { name: "Discover", href: "/discover", icon: SparklesIcon },
   { name: "Favorites", href: "/favorites", icon: HeartIcon },
   { name: "Genres", href: "/genres", icon: FilmIcon },
@@ -22,7 +21,7 @@ export default function BottomNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-black border-t border-zinc-800 flex justify-between px-3 py-2 z-50 sm:flex">
+    <nav className="fixed bottom-0 left-0 right-0 bg-black border-t border-zinc-800 flex justify-between px-3 py-2 z-50 sm:hidden">
       {navItems.map(({ name, href, icon: Icon }) => {
         const isActive = pathname === href;
         return (
