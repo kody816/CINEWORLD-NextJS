@@ -1,26 +1,29 @@
-import Header from '@/components/navbar/Header'
-import './globals.css'
-import { Inter } from 'next/font/google'
-import Footer from '@/components/footer/Footer'
-
-const inter = Inter({ subsets: ['latin'] })
+import "./globals.css";
+import TopNav from "../components/layout/TopNav";
+import MobileNav from "../components/layout/MobileNav";
 
 export const metadata = {
-  title: 'CineWorld',
-  description: 'A World of Cinema',
-}
+  title: "CineWorld",
+  description: "Stream movies, series and animations instantly.",
+};
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
-        <Header/>
-        <div className='mt-32'>
-          {children}
+      <body className="bg-black text-white">
+        {/* Desktop Nav */}
+        <div className="hidden lg:block">
+          <TopNav />
         </div>
-        
-        <Footer/>
-        </body>
+
+        {/* Main Page Content */}
+        <div className="pb-20 lg:pb-0">{children}</div>
+
+        {/* Mobile/Tablet Bottom Nav */}
+        <div className="lg:hidden">
+          <MobileNav />
+        </div>
+      </body>
     </html>
-  )
+  );
 }
