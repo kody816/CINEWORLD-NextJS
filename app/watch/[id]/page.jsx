@@ -59,7 +59,7 @@ export default function WatchPage() {
           {/* Buttons */}
           <div className="flex flex-wrap gap-4">
             <a
-              href={`https://vidsrc.to/embed/movie/${id}`}
+  href={`/api/download/${id}`}
               target="_blank"
               rel="noopener noreferrer"
               className="bg-yellow-400 hover:bg-yellow-300 text-black px-6 py-2 rounded-md font-semibold transition"
